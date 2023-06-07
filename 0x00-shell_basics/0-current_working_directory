@@ -1,2 +1,2 @@
 #!/bin/bash 
-echo root@b3126b85eb6c:/alx-system_engineering-devops/0x00-shell_basics# 
+echo /root@b3126b85eb6c:/alx-system_engineering-devops/0x00-shell_basics# 
