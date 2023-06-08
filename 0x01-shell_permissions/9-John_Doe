@@ -1,2 +1,2 @@
-#!/bin/blash
+#!/bin/blsh
 chmod 777 hello
