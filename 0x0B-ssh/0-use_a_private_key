@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+server="52.201.211.42"
+ssh -i ~/.ssh/school ubuntu@$server
