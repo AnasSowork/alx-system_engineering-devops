@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
+# a Bash script that connects to a server using SSH: Server address, SSH command with single-character flags
 server="52.201.211.42"
 ssh -i ~/.ssh/school ubuntu@$server
