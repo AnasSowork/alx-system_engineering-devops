@@ -1,3 +1,3 @@
 #!/usr/bin/env bash 
 # this script is transfering a file to a server
-scp -o StrictHostKeyChecking=no -i "~/.ssh/id_rsa" "0-transfer_file" "ubuntu@52.201.211.42:~/"
+scp -i "~/.ssh/id_rsa" "0-transfer_file" "ubuntu@52.201.211.42:~/"
