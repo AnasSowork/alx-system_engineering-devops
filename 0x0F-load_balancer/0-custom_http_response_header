@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+# Script to duplicate web-01 configuration onto web-02
+# This script is an enhanced version of the web server configuration scripts.
+
+# Uncomment to enable debugging mode
+#set -x
+
+echo -e "Updating and performing minor checks...\n"
+
+# Function to install packages if not already installed
+function install() {
+    command -v "$1" &> /dev/null
+
+    # Check if package is not installed
+    if [ $? -ne 0 ]; then
+        echo -e "    Installing: $1\n"
+        sudo apt-get update -y -qq && \
+            sudo apt-get install -y "$1" -qq
+        echo -e "\n"
+    else
+        echo -e "    $1 is already installed.\n"
+    fi
+}
+
+# Install Nginx
+install nginx
+
+echo -e "\nSetting up additional configurations...\n"
+
+# Allow Nginx through firewall
+sudo ufw allow 'Nginx HTTP'
+
+# Grant ownership of website files for easier editing
+if [ -d "/var/www" ]; then
+    sudo chown -R "$USER":"$USER" /var/www
+    sudo chmod -R 755 /var/www
+else
+    sudo mkdir -p /var/www
+    sudo chown -R "$USER":"$USER" /var/www
+    sudo chmod -R 755 /var/www
+fi
+
+# Create directories if not present
+for dir in /var/www/{html,error}; do
+    if ! [ -d "$dir" ]; then
+        mkdir -p "$dir"
+    fi
+done
+
+# Create new index page
+echo "Hello World!" > /var/www/html/index.html
+
+# Create custom error page
+echo "Ceci n'est pas une page" > /var/www/html/error_404.html
+
+# Backup default server configuration file
+sudo cp /etc/nginx/sites-enabled/default nginx-sites-enabled_default.backup
+
+# Define server configuration
+server_config="server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html
+    server_name_;
+    add_header X-Served-By \$hostname;
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+    if (\$request_filename ~ redirect_me){
+        rewrite ^ https://th3-gr00t.tk/ permanent;
+    }
+    error_page 404 /error_404.html;
+    location = /error_404.html {
+        internal;
+    }
+}"
+
+# Apply server configuration
+echo "$server_config" | sudo dd status=none of=/etc/nginx/sites-enabled/default
+
+# Restart Nginx
+if [ "$(pgrep -c nginx)" -le 0 ]; then
+    sudo service nginx start
+else
+    sudo service nginx restart
+fi
