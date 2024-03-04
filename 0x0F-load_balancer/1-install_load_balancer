@@ -34,11 +34,11 @@ defaults
   timeout server 15s
   timeout http-request 10s
 
-frontend clickviral-tech-frontend
+frontend cosfal-tech-frontend
     bind *:80
-    default_backend clickviral-tech-backend
+    default_backend cosfal-tech-backend
 
-backend clickviral-tech-backend
+backend cosfal-tech-backend
     balance roundrobin
     server 428738-web-01 52.201.211.42 check
     server 428738-web-02 54.89.194.2 check
