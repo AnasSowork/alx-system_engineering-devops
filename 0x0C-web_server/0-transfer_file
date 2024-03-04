@@ -1,9 +1,8 @@
 #!/usr/bin/env bash 
 # this script is transfering a file to a server
-
 if [ $# -lt 4 ];
 then
-    echo "Usage: $0 PATH_TO_FILE IP USERNAME PATH_TO_SSH_KEY"
+    echo "Usage: 0-transfer_file PATH_TO_FILE IP USERNAME PATH_TO_SSH_KEY"
 else
     scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa 0-transfer_file ubuntu@52.201.211.42:~/
 fi
