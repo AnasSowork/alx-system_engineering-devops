@@ -8,7 +8,6 @@ display_info() {
     local destination="$4"
     echo "The subdomain $subdomain is a $record_type record and points to $destination"
 }
-
 # Function to audit subdomains
 audit_subdomains() {
     local domain="$1"
