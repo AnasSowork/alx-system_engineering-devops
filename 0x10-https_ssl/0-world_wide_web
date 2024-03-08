@@ -16,7 +16,7 @@ audit_subdomains() {
     
     # If no specific subdomain is provided, audit default subdomains
     if [ -z "$subdomain" ]; then
-        subdomains=("www" "lb-01" "web-01" "web-02")
+        subdomains=("www" "	54.237.55.71" "52.201.211.42" "54.89.194.2")
     else
         subdomains=("$subdomain")
     fi
