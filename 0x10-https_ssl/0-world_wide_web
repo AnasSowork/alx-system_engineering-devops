@@ -1,43 +1,16 @@
 #!/usr/bin/env bash
-# This script audits subdomains of a given domain and displays information about them
-# Function to display information about a subdomain
-display_info() {
-    local subdomain="$1"
-    local domain="$2"
-    local record_type="$3"
-    local destination="$4"
-    echo "The subdomain $subdomain is a $record_type record and points to $destination"
-}
-# Function to audit subdomains
-audit_subdomains() {
-    local domain="$1"
-    local subdomain="$2"
-    
-    # If no specific subdomain is provided, audit default subdomains
-    if [ -z "$subdomain" ]; then
-        subdomains=("www" "	54.237.55.71" "52.201.211.42" "54.89.194.2")
-    else
-        subdomains=("$subdomain")
-    fi
-    
-    for sub in "${subdomains[@]}"; do
-        record_type=$(dig +short "$sub"."$domain" | awk '{print toupper($1)}')
-        destination=$(dig +short "$sub"."$domain")
-        
-        if [ -z "$destination" ]; then
-            echo "Subdomain $sub does not exist for domain $domain"
-        else
-            display_info "$sub" "$domain" "$record_type" "$destination"
-        fi
-    done
+# print domains and subdomains
+
+print_domain_subdomain () {
+    dig "$1" | grep -A1 'ANSWER SECTION:' | sed -r "s/$1./$2/g" | awk -F" " ' NR==2 { print "The subdomain " $1 " is a " $4 " record and points to " $5 }'
 }
 
-if [ "$#" -lt 1 ]; then
-    echo "Usage: $0 <domain> [subdomain]"
-    exit 1
+if [ "$#" -eq 2 ]
+then
+    print_domain_subdomain "$2.$1" "$2"
+else
+    print_domain_subdomain "www.$1" "www"
+    print_domain_subdomain "lb-01.$1" "lb-01"
+    print_domain_subdomain "web-01.$1" "web-01"
+    print_domain_subdomain "web-02.$1" "web-02"
 fi
-
-domain="$1"
-subdomain="$2"
-
-audit_subdomains "$domain" "$subdomain"
