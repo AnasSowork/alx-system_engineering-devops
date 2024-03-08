@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# This script audits subdomains of a given domain and displays information about them
 # Function to display information about a subdomain
 display_info() {
     local subdomain="$1"
