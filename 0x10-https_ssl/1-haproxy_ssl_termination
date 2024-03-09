@@ -1,0 +1,43 @@
+# Global settings
+global
+    log /dev/log local0
+    log /dev/log local1 notice
+    chroot /var/lib/haproxy
+    stats socket /run/haproxy/admin.sock mode 660 level admin
+    stats timeout 30s
+    user haproxy
+    group haproxy
+    daemon
+
+# Default SSL material locations
+ca-base /etc/ssl/certs
+crt-base /etc/ssl/private
+
+# Default ciphers to use on SSL-enabled listening sockets.
+# For more information, see ciphers(1SSL). This list is from:
+#  https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/
+ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS
+ssl-default-bind-options no-sslv3
+
+# Default certificate to use for SSL if none is specified explicitly.
+# This is needed by haproxy since it can't tolerate missing SSL certificates.
+# It needs at least one to start.
+# To generate a self-signed certificate, use:
+#  sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/haproxy.pem -out /etc/ssl/certs/haproxy.pem
+# Don't use this for anything more than testing.
+ssl-default-server-cert /etc/ssl/certs/ssl-cert-snakeoil.pem
+
+# HAProxy main frontend which proxys to the backends
+frontend main
+    bind *:443 ssl crt /etc/ssl/certs/ssl-cert-snakeoil.pem
+    use_backend www-backend if { ssl_fc_sni www.holberton.online }
+
+# backend for www.holberton.online
+backend www-backend
+    server www-server1 192.168.1.10:80
+
+# Redirect HTTP traffic to HTTPS
+frontend http_to_https
+    bind *:80
+    mode http
+    redirect scheme https code 301 if !{ ssl_fc }
