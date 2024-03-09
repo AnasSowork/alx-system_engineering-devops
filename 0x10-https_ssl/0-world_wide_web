@@ -1,30 +1,14 @@
 #!/usr/bin/env bash
-# Script to display information about subdomains
+# print domains and subdomains
 
-print_domain_subdomain() {
-    result=$(dig "$1" +short)
-    if [ -z "$result" ]; then
-        echo "Subdomain $2 doesn't exist"
-    else
-        echo "The subdomain $2 is a A record and points to $result"
-    fi
+print_domain_subdomain () {
+    dig "$1" | grep -A1 'ANSWER SECTION:' | sed -r "s/$1./$2/g" | awk -F" " ' NR==2 { print "The subdomain " $1 " is a " $4 " record and points to " $5 }'
 }
 
-# Extracting the IP address from dig output using awk
-get_ip() {
-    awk '/ANSWER SECTION/ { getline; print $NF }'
-}
-
-# Check if both domain and subdomain are provided
-if [ "$#" -eq 2 ]; then
-    ip_address=$(dig "$2.$1" +short | get_ip)
-    if [ -n "$ip_address" ]; then
-        echo "The subdomain $2 is a A record and points to $ip_address"
-    else
-        echo "Subdomain $2 doesn't exist"
-    fi
+if [ "$#" -eq 2 ]
+then
+    print_domain_subdomain "$2.$1" "$2"
 else
-    # If only domain is provided, display information for predefined subdomains
     print_domain_subdomain "www.$1" "www"
     print_domain_subdomain "lb-01.$1" "lb-01"
     print_domain_subdomain "web-01.$1" "web-01"
