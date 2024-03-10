@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# configures a server to listening on port 80 of all servers active IPv4 IPs
+sudo apt-get update
+sudo apt-get install -y nginx
+
+if ! grep -q "listen *:80;" /etc/nginx/sites-enabled/default; then
+    sudo sed -i "s/8080/80/" /etc/nginx/sites-enabled/default
+    sudo service nginx restart
+    sudo dd if=/dev/null of=/run/nginx.pid &>/dev/null
+    echo "Nginx configured to listen on port 80 for all active IPv4 IPs"
+else
+    echo "Nginx is already configured to listen on port 80"
+fi
