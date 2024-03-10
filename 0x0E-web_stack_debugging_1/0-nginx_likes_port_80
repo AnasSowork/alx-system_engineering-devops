@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#a Bash script that configures a server
+apt-get update
+apt-get install -y nginx
+
+if ! grep -q "listen 80;" /etc/nginx/sites-available/default; then
+    sed -i '/listen 80;/a \\tlisten *:80;' /etc/nginx/sites-available/default
+    systemctl restart nginx
+    echo "Nginx configured to listen on port 80 for all active IPv4 IPs"
+else
+    echo "Nginx is already configured to listen on port 80"
+fi
