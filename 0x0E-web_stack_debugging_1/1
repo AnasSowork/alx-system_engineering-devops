@@ -1,12 +1,2 @@
-Reading package lists...
-E: Could not open lock file /var/lib/apt/lists/lock - open (13: Permission denied)
-E: Unable to lock directory /var/lib/apt/lists/
-W: Problem unlinking the file /var/cache/apt/pkgcache.bin - RemoveCaches (13: Permission denied)
-W: Problem unlinking the file /var/cache/apt/srcpkgcache.bin - RemoveCaches (13: Permission denied)
-E: Could not open lock file /var/lib/dpkg/lock-frontend - open (13: Permission denied)
-E: Unable to acquire the dpkg frontend lock (/var/lib/dpkg/lock-frontend), are you root?
-grep: /etc/nginx/sites-available/default: No such file or directory
-sed: can't read /etc/nginx/sites-available/default: No such file or directory
-System has not been booted with systemd as init system (PID 1). Can't operate.
-Failed to connect to bus: Host is down
-Nginx configured to listen on port 80 for all active IPv4 IPs
+ln: failed to create symbolic link '/etc/nginx/sites-enabled/default': No such file or directory
+nginx: unrecognized service
