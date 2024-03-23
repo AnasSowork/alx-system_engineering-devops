@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Configures Nginx to run as the nginx user and listen on port 8080
+
+cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
+chown -R nginx:nginx /var/log/nginx /var/lib/nginx /var/www/html
+sed -i 's/user  nginx;/user  nginx nginx;/g' /etc/nginx/nginx.conf
+service nginx restart
+pgrep -x "nginx" &>/dev/null
+nc -z 0 8080
+echo "Nginx configured successfully to run as nginx user and listen on port 8080"

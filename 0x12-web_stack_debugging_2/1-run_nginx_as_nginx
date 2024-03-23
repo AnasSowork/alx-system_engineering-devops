@@ -7,8 +7,11 @@ if ! command -v nginx &>/dev/null; then
 fi
 
 cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
+
 chown -R nginx:nginx /var/log/nginx /var/lib/nginx /var/www/html
+
 sed -i 's/user  nginx;/user  nginx nginx;/g' /etc/nginx/nginx.conf
+
 service nginx restart
 if pgrep -x "nginx" &>/dev/null; then
     echo "Nginx is running as nginx user"
