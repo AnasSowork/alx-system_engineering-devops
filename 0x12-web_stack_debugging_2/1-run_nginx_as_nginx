@@ -10,14 +10,16 @@ cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
 chown -R nginx:nginx /var/log/nginx /var/lib/nginx /var/www/html
 sed -i 's/user  nginx;/user  nginx nginx;/g' /etc/nginx/nginx.conf
 service nginx restart
-ps auxff | grep 'nginx: master process' | grep -v grep | grep -q nginx
-if [ $? -ne 0 ]; then
+if pgrep -x "nginx" &>/dev/null; then
+    echo "Nginx is running as nginx user"
+else
     echo "Nginx is not running as nginx user"
     exit 1
 fi
 
-nc -z 0 8080
-if [ $? -ne 0 ]; then
+if nc -z 0 8080; then
+    echo "Nginx is listening on port 8080"
+else
     echo "Nginx is not listening on port 8080"
     exit 1
 fi
