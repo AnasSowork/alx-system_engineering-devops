@@ -1,30 +1,7 @@
 #!/usr/bin/env bash
-# This script configures Nginx to run as the nginx user and listen on all active IPs on port 8080.
-
-if ! command -v nginx &>/dev/null; then
-    echo "Nginx is not installed"
-    exit 1
-fi
-
-cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
-
-chown -R nginx:nginx /var/log/nginx /var/lib/nginx /var/www/html
-
-sed -i 's/user  nginx;/user  nginx nginx;/g' /etc/nginx/nginx.conf
-
-service nginx restart
-if pgrep -x "nginx" &>/dev/null; then
-    echo "Nginx is running as nginx user"
-else
-    echo "Nginx is not running as nginx user"
-    exit 1
-fi
-
-if nc -z 0 8080; then
-    echo "Nginx is listening on port 8080"
-else
-    echo "Nginx is not listening on port 8080"
-    exit 1
-fi
-
-echo "Nginx configured successfully to run as nginx user and listen on port 8080"
+# Configures the container to run nginx user on port 8080
+pkill -f apache2
+chown -R nginx:nginx /etc/nginx/nginx.conf
+chmod 644 /etc/nginx/nginx.conf
+sed -i 's/80 default_server/8080 default_server/' /etc/nginx/sites-available/default
+sudo -u nginx service nginx restart
