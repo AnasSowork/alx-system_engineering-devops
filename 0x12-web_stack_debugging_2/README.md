@@ -11,4 +11,4 @@ File | Task
 1-run_nginx_as_nginx | Bash script that configures the container to run Nginx as the ```nginx``` user
 
 ## Author
-Francesca Cantor
+Anas Falaki
