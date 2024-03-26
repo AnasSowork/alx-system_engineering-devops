@@ -1,56 +1,29 @@
 #!/usr/bin/python3
-
-"""
-Checks student output for returning info from REST API
-"""
-
-import requests
-import sys
-
-users_url = "https://jsonplaceholder.typicode.com/users"
-todos_url = "https://jsonplaceholder.typicode.com/todos"
+""" Python script that uses REST API to returns information about a given
+employee's TODO list progress """
+from requests import get
+from sys import argv
 
 
-def first_line(employee_id):
-    """ Fetch user name """
-
-    resp = requests.get(users_url).json()
-
-    name = None
-    for user in resp:
-        if user['id'] == employee_id:
-            name = user['name']
-
-    filename = 'student_output'
-
-    with open(filename, 'r') as f:
-        first = f.readline().strip()
-
-    if name in first:
-        print(f"Employee {name}: OK")
-    else:
-        print(f"Employee {name}: Incorrect")
-
-
-def todo_list_progress(employee_id):
-    """ Display employee's TODO list progress """
-
-    resp = requests.get(todos_url, params={'userId': employee_id}).json()
-
-    total_tasks = len(resp)
-    completed_tasks = [task for task in resp if task['completed']]
-    num_completed_tasks = len(completed_tasks)
-
-    print(f"Employee {name} is done with tasks({num_completed_tasks}/{total_tasks}):")
-    for task in completed_tasks:
-        print(f"\t{task['title']}")
+def get_todos(employee_id):
+    """ Uses get to pull todo tasks of passed in employee_id """
+    users = get("https://jsonplaceholder.typicode.com/users/" +
+                employee_id).json()
+    todos = get("https://jsonplaceholder.typicode.com/todos?userId=" +
+                employee_id).json()
+    if not users or not todos:
+        return ("Not a valid JSON")
+    name = users.get('name')
+    completed = [task.get('title') for task in todos if task.get('completed')]
+    total_tasks_count = len(todos)
+    completed_count = len(completed)
+    print("Employee {} is done with tasks({}/{}):".format(name,
+                                                          completed_count,
+                                                          total_tasks_count))
+    for t in completed:
+        print("\t {}".format(t))
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: ./main.py employee_id")
-        sys.exit(1)
-    
-    employee_id = int(sys.argv[1])
-    first_line(employee_id)
-    todo_list_progress(employee_id)
+    if len(argv) > 1:
+        get_todos(argv[1])
