@@ -1,49 +1,56 @@
 #!/usr/bin/python3
 
 """
-This script retrieves information about an employee's TODO list progress using a REST API.
+Checks student output for returning info from REST API
 """
 
-import sys
 import requests
+import sys
 
-def get_employee_todo_progress(employee_id):
-    """
-    Retrieves and displays the employee's TODO list progress.
+users_url = "https://jsonplaceholder.typicode.com/users"
+todos_url = "https://jsonplaceholder.typicode.com/todos"
 
-    Args:
-        employee_id (int): The ID of the employee.
-    """
-    base_url = "https://jsonplaceholder.typicode.com"
-    user_url = f"{base_url}/users/{employee_id}"
-    todo_url = f"{base_url}/todos?userId={employee_id}"
 
-    try:
-        user_response = requests.get(user_url)
-        todo_response = requests.get(todo_url)
+def first_line(employee_id):
+    """ Fetch user name """
 
-        if user_response.status_code != 200 or todo_response.status_code != 200:
-            print("Failed to fetch data from the API")
-            return
+    resp = requests.get(users_url).json()
 
-        user_data = user_response.json()
-        todo_data = todo_response.json()
+    name = None
+    for user in resp:
+        if user['id'] == employee_id:
+            name = user['name']
 
-        employee_name = user_data.get("name")
-        total_tasks = len(todo_data)
-        completed_tasks = [task for task in todo_data if task.get("completed")]
-        num_completed_tasks = len(completed_tasks)
+    filename = 'student_output'
 
-        print(f"Employee {employee_name} is done with tasks({num_completed_tasks}/{total_tasks}):")
-        for task in completed_tasks:
-            print(f"\t{task['title']}")
+    with open(filename, 'r') as f:
+        first = f.readline().strip()
 
-    except requests.exceptions.RequestException as e:
-        print(f"Error: {e}")
+    if name in first:
+        print(f"Employee {name}: OK")
+    else:
+        print(f"Employee {name}: Incorrect")
+
+
+def todo_list_progress(employee_id):
+    """ Display employee's TODO list progress """
+
+    resp = requests.get(todos_url, params={'userId': employee_id}).json()
+
+    total_tasks = len(resp)
+    completed_tasks = [task for task in resp if task['completed']]
+    num_completed_tasks = len(completed_tasks)
+
+    print(f"Employee {name} is done with tasks({num_completed_tasks}/{total_tasks}):")
+    for task in completed_tasks:
+        print(f"\t{task['title']}")
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: ./script_name.py employee_id")
+        print("Usage: ./main.py employee_id")
         sys.exit(1)
-    employee_id = sys.argv[1]
-    get_employee_todo_progress(employee_id)
+    
+    employee_id = int(sys.argv[1])
+    first_line(employee_id)
+    todo_list_progress(employee_id)
